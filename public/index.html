@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Mbah Wening 🌾 — Teman cerita & primbon</title>
+  <meta name="description" content="Ngobrol dengan Mbah Wening: teman cerita hangat dengan weton, jodoh, arti nama, tafsir mimpi, hari baik, shio, dan zodiak." />
+  <meta name="theme-color" content="#5b3a24" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="batik" aria-hidden="true"></div>
+
+  <header class="top">
+    <h1>Mbah Wening <span aria-hidden="true">🌾</span></h1>
+    <p class="sub">Teman cerita yang paham weton, mimpi, dan curhat tanpa antre.</p>
+  </header>
+
+  <main id="app">
+    <!-- Kartu sambutan -->
+    <section id="welcome" class="card welcome" aria-labelledby="welcome-title">
+      <h2 id="welcome-title">Kenalan dulu, Nak</h2>
+      <p>Mbah pakai nama panggilan dan tanggal lahirmu sebagai acuan awal hitungan weton, shio, dan zodiak.</p>
+      <form id="profile-form" novalidate>
+        <label for="nama">Nama panggilan</label>
+        <input id="nama" name="nama" type="text" maxlength="40" autocomplete="nickname" placeholder="mis. Sari" required />
+
+        <label for="tgl">Tanggal lahir <span class="opt">(boleh dikosongkan)</span></label>
+        <input id="tgl" name="tgl" type="date" min="1900-01-01" max="2100-12-31" />
+
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+
+        <div class="actions">
+          <button type="submit" class="btn primary">Mulai</button>
+          <a href="#" id="skip" class="link">Lewati dulu</a>
+        </div>
+      </form>
+      <p class="privacy"><span aria-hidden="true">🔒</span> Data hanya dipakai di sesi ini: tersimpan di browsermu saja dan hilang saat tab ditutup.</p>
+    </section>
+
+    <!-- Area chat -->
+    <section id="chat" class="chat" hidden aria-label="Percakapan dengan Mbah Wening">
+      <div class="toolbar">
+        <div class="mode" role="radiogroup" aria-label="Mode jawaban">
+          <button type="button" role="radio" data-mode="CEPAT" aria-checked="false">Cepat</button>
+          <button type="button" role="radio" data-mode="LENGKAP" aria-checked="true">Lengkap</button>
+        </div>
+        <button type="button" id="clear" class="btn ghost">Hapus percakapan</button>
+      </div>
+
+      <div id="log" class="log" role="log" aria-live="polite" aria-relevant="additions text" aria-busy="false"></div>
+
+      <nav class="chips" aria-label="Menu layanan" id="chips"></nav>
+
+      <form id="composer" class="composer">
+        <label for="input" class="sr-only">Tulis pesan untuk Mbah</label>
+        <textarea id="input" rows="1" maxlength="2000" placeholder="Ceritakan ke Mbah… (Enter kirim, Shift+Enter baris baru)" enterkeyhint="send"></textarea>
+        <button type="submit" class="btn primary send" id="send" aria-label="Kirim pesan">Kirim</button>
+      </form>
+    </section>
+  </main>
+
+  <template id="crisis-tpl">
+    <aside class="crisis" role="note" aria-label="Bantuan darurat">
+      <strong>Kamu tidak sendirian.</strong>
+      Healing119 Kemenkes: telepon <a href="tel:119">119</a> lalu tekan ekstensi 8 (gratis, 24 jam; kalau belum tersambung kemungkinan antre, coba lagi) atau <a href="https://healing119.id" target="_blank" rel="noopener">healing119.id</a>. Untuk bahaya langsung: <a href="tel:112">112</a>.
+    </aside>
+  </template>
+
+  <footer class="foot">
+    Primbon adalah kearifan budaya dan hiburan reflektif, bukan ilmu pasti. Mbah Wening bukan psikiater, psikolog, dokter, atau penasihat keuangan/hukum.
+  </footer>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

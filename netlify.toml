@@ -1,0 +1,14 @@
+[build]
+  publish = "public"
+  # Tanpa langkah build: situs statis biasa + satu Netlify Function.
+
+[functions]
+  directory = "netlify/functions"
+  included_files = ["prompts/**"]
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+    X-Frame-Options = "DENY"
