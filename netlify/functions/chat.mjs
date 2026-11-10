@@ -1,12 +1,16 @@
 // POST /api/chat — Mbah Wening. Hitungan primbon dilakukan kode (lib/calc.mjs),
 // model hanya menafsirkan. Isi pesan, nama, dan tanggal lahir TIDAK PERNAH di-log.
-import Anthropic from "@anthropic-ai/sdk";
+// Model dipilih lewat rantai penyedia dengan pindah otomatis (lib/providers.mjs).
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { validatePayload, buildContextBlocks } from "./lib/context.mjs";
+import { streamWithFallback } from "./lib/providers.mjs";
 
-const DEFAULT_MODEL = "claude-sonnet-5-5"; // alternatif lebih murah: "claude-haiku-5-5"
+const MAX_TOKENS = Number(process.env.MAX_TOKENS) || 1100;
 const FRIENDLY_ERROR = "Mbah lagi istirahat sebentar, coba lagi nanti ya 🌾";
+// Dipakai bila pesan krisis tidak bisa dilayani penyedia mana pun.
+const CRISIS_STATIC =
+  "Mbah di sini menemanimu. Kalau kamu merasa tidak aman sekarang, hubungi Healing119 Kemenkes: telepon 119 lalu pilih ekstensi 8 (gratis, 24 jam), atau buka healing119.id. Untuk bahaya langsung, hubungi 112 atau IGD terdekat. Kamu tidak sendirian 🌾";
 
 let promptCache = null;
 async function masterPrompt() {
@@ -55,26 +59,15 @@ export default async (req) => {
       let sentText = false;
       try {
         const system = `${await masterPrompt()}\n\n${contextBlocks}`;
-        const anthropic = new Anthropic();
-        const events = await anthropic.messages.create({
-          model: process.env.MODEL || DEFAULT_MODEL,
-          max_tokens: 700,
-          system,
-          messages: v.value.messages,
-          stream: true,
-        });
-        for await (const ev of events) {
-          if (ev.type === "content_block_delta" && ev.delta.type === "text_delta") {
-            sentText = true;
-            controller.enqueue(sse({ t: ev.delta.text }));
-          }
+        for await (const { t } of streamWithFallback({ system, messages: v.value.messages, maxTokens: MAX_TOKENS, crisis })) {
+          sentText = true;
+          controller.enqueue(sse({ t }));
         }
-        if (!sentText) controller.enqueue(sse({ error: FRIENDLY_ERROR }));
       } catch (err) {
         // Hanya metadata teknis, tanpa isi percakapan.
-        console.error("chat: model error", err?.status ?? "", err?.name ?? "");
-        controller.enqueue(sse({ error: FRIENDLY_ERROR }));
+        console.error("chat: gagal", err?.status ?? "", err?.name ?? "");
       }
+      if (!sentText) controller.enqueue(sse(crisis ? { t: CRISIS_STATIC } : { error: FRIENDLY_ERROR }));
       controller.enqueue(sse({ done: true }));
       controller.close();
     },
